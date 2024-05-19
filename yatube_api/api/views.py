@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from posts.models import Comment, Group, Post, User
+from posts.models import Comment, Group, Post
 from .base_post_comment_viewset import BasePostCommentViewSet
 from .serializers import CommentSerializer, GroupSerializer, PostSerializer
 
@@ -13,7 +13,8 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     def method_not_allowed(self, request, *args, **kwargs):
         """Метод для возврата ошибки Method Not Allowed."""
-        return Response({"error": "Method Not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response({"error": "Method Not Allowed"},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     create = update = partial_update = destroy = method_not_allowed
 

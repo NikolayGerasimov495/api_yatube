@@ -24,4 +24,3 @@ class BasePostCommentViewSet(viewsets.ModelViewSet):
         if response:
             return response
         return super().update(request, *args, **kwargs)
-
