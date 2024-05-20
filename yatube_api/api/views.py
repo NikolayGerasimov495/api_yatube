@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.response import Response
 
 from posts.models import Comment, Group, Post
@@ -43,4 +43,3 @@ class CommentViewSet(BasePostCommentViewSet):
         post_id = self.kwargs.get('post_id')
         post = get_object_or_404(Post, id=post_id)
         serializer.save(author=self.request.user, post=post)
-
