@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
@@ -6,17 +7,10 @@ from .base_post_comment_viewset import BasePostCommentViewSet
 from .serializers import CommentSerializer, GroupSerializer, PostSerializer
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet для работы с группами."""
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-
-    def method_not_allowed(self, request, *args, **kwargs):
-        """Метод для возврата ошибки Method Not Allowed."""
-        return Response({"error": "Method Not Allowed"},
-                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    create = update = partial_update = destroy = method_not_allowed
 
 
 class PostViewSet(BasePostCommentViewSet):
@@ -34,14 +28,19 @@ class CommentViewSet(BasePostCommentViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        return Comment.objects.filter(post=post_id)
+
     def list(self, request, post_id=None):
         """Метод для получения списка комментариев к посту."""
-        comments = Comment.objects.filter(post=post_id)
-        serializer = CommentSerializer(comments, many=True)
+        queryset = self.get_queryset()
+        serializer = CommentSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
         """Метод для создания нового комментария."""
         post_id = self.kwargs.get('post_id')
-        post = Post.objects.get(id=post_id)
+        post = get_object_or_404(Post, id=post_id)
         serializer.save(author=self.request.user, post=post)
+
