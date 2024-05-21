@@ -32,12 +32,6 @@ class CommentViewSet(BasePostCommentViewSet):
         post_id = self.kwargs.get('post_id')
         return Comment.objects.filter(post=post_id)
 
-    def list(self, request, post_id=None):
-        """Метод для получения списка комментариев к посту."""
-        queryset = self.get_queryset()
-        serializer = CommentSerializer(queryset, many=True)
-        return Response(serializer.data)
-
     def perform_create(self, serializer):
         """Метод для создания нового комментария."""
         post_id = self.kwargs.get('post_id')
